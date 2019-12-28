@@ -9,7 +9,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ProtocolAPI {
 
   public ProtocolAPI(final JavaPlugin host) {
-
     final Plugin plugin = Bukkit.getPluginManager().getPlugin("ProtocolLib");
     if (plugin == null) {
       throw new UnsupportedOperationException("Unable to initialize ProtocolAPI - ProtocolLib is not installed on this server.");

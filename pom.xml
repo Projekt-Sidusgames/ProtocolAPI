@@ -6,7 +6,7 @@
 
   <groupId>net.crytec.libs</groupId>
   <artifactId>protocol</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
 
   <properties>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -109,8 +109,6 @@
           </execution>
         </executions>
         <configuration>
-          <serverId>nexus-releases</serverId>
-          <nexusUrl>http://repo.avarioncraft.de/</nexusUrl>
           <skipStaging>true</skipStaging>
         </configuration>
       </plugin>
@@ -121,7 +119,7 @@
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
-          <optimize>true</optimize>
+          <encoding>UTF-8</encoding>
           <compilerArgs>
             <arg>-parameters</arg>
           </compilerArgs>
