@@ -6,9 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.Maps;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.google.common.collect.Sets;
 import java.util.Map;
+import java.util.Set;
 import net.crytec.libs.protocol.events.PlayerReceiveEntityEvent;
 import net.crytec.libs.protocol.events.PlayerUnloadsEntityEvent;
 import org.bukkit.Bukkit;
@@ -22,11 +22,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class EntityTracker implements Listener {
 
-  private static final Map<Player, IntSet> playerViews = Maps.newHashMap();
+  private static final Map<Player, Set<Integer>> playerViews = Maps.newHashMap();
 
 
   public EntityTracker(final JavaPlugin host) {
-    Bukkit.getOnlinePlayers().forEach(player -> this.playerViews.put(player, new IntOpenHashSet()));
+    Bukkit.getOnlinePlayers().forEach(player -> this.playerViews.put(player, Sets.newHashSet()));
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(host, PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
 
@@ -71,7 +71,7 @@ public class EntityTracker implements Listener {
 
   @EventHandler
   public void onJoin(final PlayerJoinEvent event) {
-    this.playerViews.put(event.getPlayer(), new IntOpenHashSet());
+    this.playerViews.put(event.getPlayer(), Sets.newHashSet());
   }
 
   @EventHandler
@@ -86,13 +86,13 @@ public class EntityTracker implements Listener {
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onEntityHiding(final PlayerUnloadsEntityEvent event) {
-    final IntSet ints = this.playerViews.get(event.getPlayer());
+    final Set<Integer> ints = this.playerViews.get(event.getPlayer());
     for (final int id : event.getEntityIDs()) {
       ints.remove(id);
     }
   }
 
-  public static IntSet getEntityViewOf(final Player player) {
+  public static Set<Integer> getEntityViewOf(final Player player) {
     return playerViews.get(player);
   }
 }

@@ -7,8 +7,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,10 +24,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChunkTracker implements Listener {
 
-  private static final Map<Player, LongSet> chunkViews = Maps.newHashMap();
+  private static final Map<Player, Set<Long>> chunkViews = Maps.newHashMap();
 
   public ChunkTracker(final JavaPlugin host) {
-    Bukkit.getOnlinePlayers().forEach(player -> chunkViews.put(player, new LongOpenHashSet()));
+    Bukkit.getOnlinePlayers().forEach(player -> chunkViews.put(player, Sets.newHashSet()));
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(host, PacketType.Play.Server.MAP_CHUNK) {
 
@@ -89,7 +87,7 @@ public class ChunkTracker implements Listener {
 
   @EventHandler(priority = EventPriority.LOW)
   public void onJoin(final PlayerJoinEvent event) {
-    chunkViews.put(event.getPlayer(), new LongOpenHashSet());
+    chunkViews.put(event.getPlayer(), Sets.newHashSet());
   }
 
   @EventHandler
@@ -97,7 +95,7 @@ public class ChunkTracker implements Listener {
     chunkViews.remove(event.getPlayer());
   }
 
-  public static LongSet getChunkViews(final Player player) {
+  public static Set<Long> getChunkViews(final Player player) {
     return chunkViews.get(player);
   }
 

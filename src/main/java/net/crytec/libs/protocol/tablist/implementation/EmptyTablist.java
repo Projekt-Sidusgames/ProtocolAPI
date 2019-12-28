@@ -1,16 +1,13 @@
 package net.crytec.libs.protocol.tablist.implementation;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Set;
 import net.crytec.libs.protocol.tablist.TabListManager;
 import net.crytec.libs.protocol.tablist.abstraction.ITabLine;
 import net.crytec.libs.protocol.tablist.abstraction.ITabList;
 import net.minecraft.server.v1_15_R1.ChatMessage;
-import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_15_R1.PlayerConnection;
 
@@ -26,7 +23,7 @@ import net.minecraft.server.v1_15_R1.PlayerConnection;
 public class EmptyTablist implements ITabList {
 
   public EmptyTablist(final TabListManager tabListManager) {
-    this.playerConnectionSet = new ObjectOpenHashSet<>();
+    this.playerConnectionSet = Sets.newHashSet();
     this.tabs = Lists.newArrayList();
     this.tabListManager = tabListManager;
     this.headerFooterPacket = new PacketPlayOutPlayerListHeaderFooter();
@@ -35,9 +32,9 @@ public class EmptyTablist implements ITabList {
   }
 
   private final TabListManager tabListManager;
-  private final ObjectSet<PlayerConnection> playerConnectionSet;
+  private final Set<PlayerConnection> playerConnectionSet;
   protected final ArrayList<ITabLine> tabs;
-  private PacketPlayOutPlayerListHeaderFooter headerFooterPacket;
+  private final PacketPlayOutPlayerListHeaderFooter headerFooterPacket;
 
   @Override
   public void addViewer(final PlayerConnection connection) {
@@ -90,7 +87,7 @@ public class EmptyTablist implements ITabList {
   }
 
   @Override
-  public void addLine(ITabLine line) {
+  public void addLine(final ITabLine line) {
     this.tabs.add(line);
   }
 

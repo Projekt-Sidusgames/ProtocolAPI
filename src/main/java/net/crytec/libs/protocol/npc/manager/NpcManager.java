@@ -1,12 +1,8 @@
 package net.crytec.libs.protocol.npc.manager;
 
 import com.google.common.collect.Lists;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -22,15 +18,15 @@ public class NpcManager {
 
   private static final ArrayList<NPC<?>> EMPTY_LIST = Lists.newArrayList();
   // Row | Column | Value
-  private final Map<UUID, Long2ObjectMap<Set<NPC<?>>>> npcs = new Object2ObjectOpenHashMap<>();
-  private final Int2ObjectMap<NPC<?>> entityIDMappings = new Int2ObjectOpenHashMap<>();
+  private final Map<UUID, Map<Long, Set<NPC<?>>>> npcs = Maps.newHashMap();
+  private final Map<Integer, NPC<?>> entityIDMappings = Maps.newHashMap();
 
-  public Collection<NPC<?>> getNPCsInChunk(UUID worldID, final long chunkKey) {
-    Long2ObjectMap<Set<NPC<?>>> chunkMap = npcs.get(worldID);
+  public Collection<NPC<?>> getNPCsInChunk(final UUID worldID, final long chunkKey) {
+    final Map<Long, Set<NPC<?>>> chunkMap = this.npcs.get(worldID);
     if (chunkMap == null) {
       return EMPTY_LIST;
     }
-    Set<NPC<?>> npcSet = chunkMap.get(chunkKey);
+    final Set<NPC<?>> npcSet = chunkMap.get(chunkKey);
     if (npcSet == null) {
       return EMPTY_LIST;
     }
@@ -47,17 +43,17 @@ public class NpcManager {
 
   public void spawnNPC(final NPC<?> npc) {
 
-    final long chunkKey = getChunkKey(npc.getLocation().getChunk());
+    final long chunkKey = this.getChunkKey(npc.getLocation().getChunk());
     final UUID worldID = npc.getLocation().getWorld().getUID();
 
-    if (!npcs.containsKey(worldID)) {
-      npcs.put(worldID, new Long2ObjectOpenHashMap<>());
+    if (!this.npcs.containsKey(worldID)) {
+      this.npcs.put(worldID, Maps.newHashMap());
     }
-    Long2ObjectMap<Set<NPC<?>>> chunkMap = this.npcs.get(worldID);
+    final Map<Long, Set<NPC<?>>> chunkMap = this.npcs.get(worldID);
     if (!chunkMap.containsKey(chunkKey)) {
-      chunkMap.put(chunkKey, new ObjectOpenHashSet<>());
+      chunkMap.put(chunkKey, Sets.newHashSet());
     }
-    Set<NPC<?>> chunkEntities = chunkMap.get(chunkKey);
+    final Set<NPC<?>> chunkEntities = chunkMap.get(chunkKey);
     chunkEntities.add(npc);
 
     this.entityIDMappings.put(npc.getFakeEntity().getId(), npc);
@@ -70,14 +66,14 @@ public class NpcManager {
     }
   }
 
-  public void removeNPC(NPC<?> npc) {
-    UUID worldID = npc.getLocation().getWorld().getUID();
-    long chunkKey = getChunkKey(npc.getLocation());
-    Long2ObjectMap<Set<NPC<?>>> chunkMap = npcs.get(worldID);
-    Set<NPC<?>> npcSet = chunkMap.get(chunkKey);
+  public void removeNPC(final NPC<?> npc) {
+    final UUID worldID = npc.getLocation().getWorld().getUID();
+    final long chunkKey = this.getChunkKey(npc.getLocation());
+    final Map<Long, Set<NPC<?>>> chunkMap = this.npcs.get(worldID);
+    final Set<NPC<?>> npcSet = chunkMap.get(chunkKey);
     npcSet.remove(npc);
 
-    for (Player player : npc.getLocation().getWorld().getPlayers()) {
+    for (final Player player : npc.getLocation().getWorld().getPlayers()) {
       if (ChunkTracker.isChunkInView(player, chunkKey)) {
         npc.despawnFor(player);
       }
@@ -87,7 +83,7 @@ public class NpcManager {
       chunkMap.remove(chunkKey);
     }
     if (chunkMap.isEmpty()) {
-      npcs.remove(worldID);
+      this.npcs.remove(worldID);
     }
   }
 
@@ -95,8 +91,8 @@ public class NpcManager {
     return (long) x & 0xffffffffL | ((long) z & 0xffffffffL) << 32;
   }
 
-  public long getChunkKey(Location location) {
-    return getChunkKey(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+  public long getChunkKey(final Location location) {
+    return this.getChunkKey(location.getBlockX() >> 4, location.getBlockZ() >> 4);
   }
 
   public long getChunkKey(final Chunk chunk) {

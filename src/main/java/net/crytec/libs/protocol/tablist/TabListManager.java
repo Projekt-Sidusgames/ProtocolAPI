@@ -1,6 +1,6 @@
 package net.crytec.libs.protocol.tablist;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.function.Function;
 import net.crytec.libs.protocol.tablist.abstraction.ITabList;
@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class TabListManager {
 
   public TabListManager(final JavaPlugin plugin, final Function<Player, ITabList> defaultTablistProvider) {
-    this.tabViewMap = new Object2ObjectOpenHashMap();
+    this.tabViewMap = Maps.newHashMap();
     Bukkit.getPluginManager().registerEvents(new TabListListener(this), plugin);
     this.defaultTablistProvider = defaultTablistProvider;
   }
