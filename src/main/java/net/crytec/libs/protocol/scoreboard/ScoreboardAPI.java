@@ -7,20 +7,14 @@ public class ScoreboardAPI {
 
   private final JavaPlugin host;
   private final ScoreboardManager boardManager;
-  private final boolean autoSetupOnJoin;
 
-  public ScoreboardAPI(final JavaPlugin host, final boolean registerPlayersOnJoin) {
+  public ScoreboardAPI(final JavaPlugin host) {
     this.host = host;
-    this.autoSetupOnJoin = registerPlayersOnJoin;
     this.boardManager = new ScoreboardManager(this);
   }
 
   public PlayerBoardManager getBoardManager() {
     return this.boardManager;
-  }
-
-  protected boolean setupPlayersOnJoin() {
-    return this.autoSetupOnJoin;
   }
 
   protected JavaPlugin getHost() {

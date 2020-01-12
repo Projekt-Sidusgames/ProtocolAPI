@@ -18,11 +18,7 @@ public interface PlayerBoardManager {
 
   void setSuffix(final Player player, final String suffix);
 
-  void unregisterPlayer(final Player player);
-
-  void addPlayer(final Player player, String priority);
-
-  void addPlayer(final Player player);
+  void setPriority(Player player, int priority);
 
   HashMap<UUID, Team> getUsers();
 }

@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -42,7 +43,12 @@ public class ScoreboardManager implements Listener, Runnable, PlayerBoardManager
   }
 
   @Override
-  public void addPlayer(final Player player, String priority) {
+  public void setPriority(final Player player, final int priority) {
+    this.unregisterPlayer(player);
+    Bukkit.getScheduler().runTaskLater(this.api.getHost(), () -> this.addPlayer(player, priority), 1L);
+  }
+
+  private void addPlayer(final Player player, final int priority) {
     if (this.users.containsKey(player.getUniqueId())) {
       this.unregisterPlayer(player);
     }
@@ -53,8 +59,8 @@ public class ScoreboardManager implements Listener, Runnable, PlayerBoardManager
       name = name.substring(0, 14);
     }
 
-    if (priority.length() > 2) {
-      priority = priority.substring(0, 2);
+    if (priority > 100) {
+      throw new IllegalArgumentException("Priority cannot be higher than 99");
     }
 
     final Team team = this.titleboard.registerNewTeam(priority + name);
@@ -69,22 +75,17 @@ public class ScoreboardManager implements Listener, Runnable, PlayerBoardManager
     this.boards.put(player.getUniqueId(), new PlayerBoard(player));
   }
 
-  @Override
-  public void addPlayer(final Player player) {
-    this.addPlayer(player, "0");
-  }
+  private void unregisterPlayer(final Player player) {
+    final Team team = this.users.remove(player.getUniqueId());
+    final PlayerBoard board = this.boards.remove(player.getUniqueId());
 
-
-  @Override
-  public void unregisterPlayer(final Player player) {
-    if (!this.users.containsKey(player.getUniqueId())) {
+    if (team == null || board == null) {
+      this.api.getHost().getLogger().severe(" (ScoreboardAPI) Failed to unregister player " + player.getName());
       return;
     }
-    this.titleboard.getTeam(this.users.get(player.getUniqueId()).getName()).unregister();
-    player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-    this.users.remove(player.getUniqueId());
-    this.boards.get(player.getUniqueId()).deactivate();
-    this.boards.remove(player.getUniqueId());
+
+    team.unregister();
+    board.deactivate();
   }
 
   @Override
@@ -130,20 +131,18 @@ public class ScoreboardManager implements Listener, Runnable, PlayerBoardManager
   @EventHandler
   public void handleReload(final ServerLoadEvent event) {
     if (event.getType() == LoadType.RELOAD) {
-      Bukkit.getOnlinePlayers().forEach(this::addPlayer);
+      throw new IllegalStateException("Reloads are not supported, please restart the server. Unable to inject PacketHandler!");
     }
   }
 
-  @EventHandler
-  public void setupBoardOnJoin(final PlayerJoinEvent event) {
-    if (this.api.setupPlayersOnJoin()) {
-      this.addPlayer(event.getPlayer());
-    }
-  }
-
-  @EventHandler
+  @EventHandler(priority = EventPriority.HIGHEST)
   public void unregisterOnQuit(final PlayerQuitEvent event) {
     this.unregisterPlayer(event.getPlayer());
+  }
+
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void registerOnJoin(final PlayerJoinEvent event) {
+    this.addPlayer(event.getPlayer(), 0);
   }
 
   @Override
