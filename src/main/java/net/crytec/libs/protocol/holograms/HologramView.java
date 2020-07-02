@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.Set;
 import org.bukkit.entity.Player;
 
-public class HologramView implements Iterable<AbstractHologram> {
+public class HologramView implements Iterable<AbstractHologram>{
 
-  public HologramView(final Player player) {
+  public HologramView(Player player) {
     this.player = player;
     this.viewingHolograms = Sets.newHashSet();
   }
@@ -15,18 +15,18 @@ public class HologramView implements Iterable<AbstractHologram> {
   private final Player player;
   private final Set<AbstractHologram> viewingHolograms;
 
-  public boolean isViewing(final AbstractHologram hologram) {
+  public boolean isViewing(AbstractHologram hologram) {
     return this.viewingHolograms.contains(hologram);
   }
 
-  public void addHologram(final AbstractHologram hologram) {
+  public void addHologram(AbstractHologram hologram) {
     this.viewingHolograms.add(hologram);
-    hologram.showTo(this.player);
+    hologram.showTo(player);
   }
 
-  public void removeHologram(final AbstractHologram hologram) {
+  public void removeHologram(AbstractHologram hologram) {
     this.viewingHolograms.remove(hologram);
-    hologram.hideFrom(this.player);
+    hologram.hideFrom(player);
   }
 
   @Override

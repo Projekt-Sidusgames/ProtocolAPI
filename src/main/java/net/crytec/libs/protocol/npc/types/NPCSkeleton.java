@@ -1,11 +1,11 @@
 package net.crytec.libs.protocol.npc.types;
 
 import net.crytec.libs.protocol.npc.NPC;
-import net.minecraft.server.v1_15_R1.EntitySkeleton;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.EnumItemSlot;
+import net.minecraft.server.v1_16_R1.EntitySkeleton;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.EnumItemSlot;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class NPCSkeleton extends NPC<EntitySkeleton> {

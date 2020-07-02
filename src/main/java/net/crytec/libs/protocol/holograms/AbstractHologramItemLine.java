@@ -9,7 +9,7 @@ import org.bukkit.util.Consumer;
 
 public abstract class AbstractHologramItemLine implements IHologramLine<ItemStack> {
 
-  public AbstractHologramItemLine(final Location location, final ItemStack itemStack, final AbstractHologram hologram) {
+  public AbstractHologramItemLine(Location location, ItemStack itemStack, AbstractHologram hologram) {
     this.location = location;
     this.itemStack = itemStack;
     this.hologram = hologram;
@@ -25,13 +25,13 @@ public abstract class AbstractHologramItemLine implements IHologramLine<ItemStac
   }
 
   @Override
-  public void registerClickAction(final Consumer<Player> action) {
+  public void registerClickAction(Consumer<Player> action) {
     this.clickActions.add(action);
   }
 
   @Override
-  public void onClick(final Player player) {
-    for (final Consumer<Player> action : this.clickActions) {
+  public void onClick(Player player) {
+    for(Consumer<Player> action : this.clickActions) {
       action.accept(player);
     }
   }

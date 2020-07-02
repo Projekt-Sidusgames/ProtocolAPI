@@ -21,7 +21,7 @@
  *
  */
 
-package net.crytec.libs.protocol.scoreboard.api.events;
+package net.crytec.libs.protocol.events;
 
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import net.crytec.libs.protocol.util.WrapperPlayServerScoreboardTeam;

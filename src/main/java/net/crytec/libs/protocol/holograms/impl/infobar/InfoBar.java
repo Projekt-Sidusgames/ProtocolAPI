@@ -3,10 +3,10 @@ package net.crytec.libs.protocol.holograms.impl.infobar;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.crytec.libs.protocol.holograms.impl.infobar.DoubleLinkedPacketHost.LinkedPacketType;
@@ -14,21 +14,21 @@ import net.crytec.libs.protocol.holograms.infobars.AbstractInfoBar;
 import net.crytec.libs.protocol.holograms.infobars.InfoBarManager;
 import net.crytec.libs.protocol.holograms.infobars.InfoLineSpacing;
 import net.crytec.libs.protocol.util.WrapperPlayServerMount;
-import net.minecraft.server.v1_15_R1.ChatMessage;
-import net.minecraft.server.v1_15_R1.EntityArmorStand;
-import net.minecraft.server.v1_15_R1.EntityPig;
-import net.minecraft.server.v1_15_R1.EntityRabbit;
-import net.minecraft.server.v1_15_R1.EntityTurtle;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_15_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R1.ChatMessage;
+import net.minecraft.server.v1_16_R1.EntityArmorStand;
+import net.minecraft.server.v1_16_R1.EntityPig;
+import net.minecraft.server.v1_16_R1.EntityRabbit;
+import net.minecraft.server.v1_16_R1.EntityTurtle;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R1.PlayerConnection;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -38,10 +38,10 @@ public class InfoBar extends AbstractInfoBar {
     super(entity, infoBarManager);
     this.lines = Lists.newArrayList();
     this.spawnPacketSupplier = Lists.newArrayList();
-    this.lineEntityIDs = Sets.newHashSet();
+    this.lineEntityIDs = new IntOpenHashSet();
   }
 
-  private final Set<Integer> lineEntityIDs;
+  private final IntSet lineEntityIDs;
   private final ArrayList<Supplier<DoubleLinkedPacketHost>> spawnPacketSupplier;
   private final ArrayList<LineEntity> lines;
 
@@ -49,8 +49,8 @@ public class InfoBar extends AbstractInfoBar {
   protected void showTo(final Player player) {
     this.viewingPlayer.add(player);
     final PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-    for (int index = 0; index < this.spawnPacketSupplier.size(); index++) {
-      final DoubleLinkedPacketHost packet = this.spawnPacketSupplier.get(index).get();
+    for (final Supplier<DoubleLinkedPacketHost> doubleLinkedPacketHostSupplier : this.spawnPacketSupplier) {
+      final DoubleLinkedPacketHost packet = doubleLinkedPacketHostSupplier.get();
       if (packet.type == LinkedPacketType.NMS_PACKET) {
         packet.sendNMS(connection);
       } else {
@@ -91,24 +91,13 @@ public class InfoBar extends AbstractInfoBar {
 
   @Override
   public void addLine(final String newLine, final InfoLineSpacing spacing) {
-    final LinePart spacingPart;
+    final LinePart spacingPart = switch (spacing) {
+      case LARGE -> new LargeSpacingEntity(this.entity.getLocation());
+      case MEDIUM -> new MediumSpacingEntity(this.entity.getLocation());
+      case SMALL -> new SmallSpacingEntity(this.entity.getLocation());
+    };
 
-    switch (spacing) {
-      case LARGE:
-        spacingPart = new LargeSpacingEntity(this.entity.getLocation());
-        break;
-      case MEDIUM:
-        spacingPart = new MediumSpacingEntity(this.entity.getLocation());
-        break;
-      case SMALL:
-        spacingPart = new SmallSpacingEntity(this.entity.getLocation());
-        break;
-      default:
-        spacingPart = new LargeSpacingEntity(this.entity.getLocation());
-        break;
-    }
-
-    final LinePart lineEntity = new LineEntity(this.entity.getLocation(), newLine);
+    final LineEntity lineEntity = new LineEntity(this.entity.getLocation(), newLine);
 
     final int lineID = lineEntity.getHandle().getId();
     final int spacingID = spacingPart.getHandle().getId();
@@ -121,19 +110,19 @@ public class InfoBar extends AbstractInfoBar {
 
     final ArrayList<Supplier<DoubleLinkedPacketHost>> newPackets = Lists.newArrayList();
 
-    final net.minecraft.server.v1_15_R1.Entity hostEntity = this.lines.size() == 0 ?
+    final net.minecraft.server.v1_16_R1.Entity hostEntity = this.lines.size() == 0 ?
         ((CraftEntity) this.entity).getHandle() : this.lines.get(this.lines.size() - 1);
 
-    newPackets.add(() -> spacingPart.getLivingPacket());
+    newPackets.add(spacingPart::getLivingPacket);
     newPackets.add(() -> this.getMountPacket(hostEntity, spacingPart.getHandle()));
-    newPackets.add(() -> spacingPart.getMetaPacket());
+    newPackets.add(spacingPart::getMetaPacket);
 
-    newPackets.add(() -> lineEntity.getSpawnPacket());
+    newPackets.add(lineEntity::getSpawnPacket);
     newPackets.add(() -> spacingPart.getMountPacket(lineEntity.getHandle().getId()));
-    newPackets.add(() -> spacingPart.getMetaPacket());
-    newPackets.add(() -> lineEntity.getMetaPacket());
+    newPackets.add(spacingPart::getMetaPacket);
+    newPackets.add(lineEntity::getMetaPacket);
 
-    this.lines.add((LineEntity) lineEntity);
+    this.lines.add(lineEntity);
 
     final Map<Player, PlayerConnection> connections = Maps.newHashMap();
 
@@ -141,8 +130,7 @@ public class InfoBar extends AbstractInfoBar {
       connections.put(player, ((CraftPlayer) player).getHandle().playerConnection);
     }
 
-    for (int i = 0; i < newPackets.size(); i++) {
-      final Supplier<DoubleLinkedPacketHost> packetSupplier = newPackets.get(i);
+    for (final Supplier<DoubleLinkedPacketHost> packetSupplier : newPackets) {
       this.spawnPacketSupplier.add(packetSupplier);
       final DoubleLinkedPacketHost packet = packetSupplier.get();
       if (packet.type == LinkedPacketType.NMS_PACKET) {
@@ -158,8 +146,8 @@ public class InfoBar extends AbstractInfoBar {
     }
   }
 
-  private DoubleLinkedPacketHost getMountPacket(final net.minecraft.server.v1_15_R1.Entity mount,
-      final net.minecraft.server.v1_15_R1.Entity rider) {
+  private DoubleLinkedPacketHost getMountPacket(final net.minecraft.server.v1_16_R1.Entity mount,
+      final net.minecraft.server.v1_16_R1.Entity rider) {
     final WrapperPlayServerMount packet = new WrapperPlayServerMount();
     packet.setEntityID(mount.getId());
     packet.setPassengerIds(new int[]{rider.getId()});
@@ -172,19 +160,19 @@ public class InfoBar extends AbstractInfoBar {
     return this.lines.size();
   }
 
-  static interface LinePart {
+  interface LinePart {
 
-    public net.minecraft.server.v1_15_R1.Entity getHandle();
+    net.minecraft.server.v1_16_R1.Entity getHandle();
 
-    public DoubleLinkedPacketHost getSpawnPacket();
+    DoubleLinkedPacketHost getSpawnPacket();
 
-    public DoubleLinkedPacketHost getMetaPacket();
+    DoubleLinkedPacketHost getMetaPacket();
 
-    public DoubleLinkedPacketHost setNameAndGetMeta(String line);
+    DoubleLinkedPacketHost setNameAndGetMeta(String line);
 
-    public DoubleLinkedPacketHost getMountPacket(int riderID);
+    DoubleLinkedPacketHost getMountPacket(int riderID);
 
-    public DoubleLinkedPacketHost getLivingPacket();
+    DoubleLinkedPacketHost getLivingPacket();
   }
 
   private static final class LineEntity extends EntityArmorStand implements LinePart {
@@ -237,7 +225,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_15_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R1.Entity getHandle() {
       return this;
     }
 
@@ -286,7 +274,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_15_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R1.Entity getHandle() {
       return this;
     }
 
@@ -335,7 +323,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_15_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R1.Entity getHandle() {
       return this;
     }
 
@@ -384,7 +372,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_15_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R1.Entity getHandle() {
       return this;
     }
 

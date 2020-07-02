@@ -4,7 +4,7 @@ import org.bukkit.util.Vector;
 
 public class MovingHologram {
 
-  public MovingHologram(final AbstractHologram hologram, final Vector direction, final int ticks) {
+  public MovingHologram(AbstractHologram hologram, Vector direction, int ticks) {
     this.hologram = hologram;
     this.direction = direction;
     this.ticks = ticks;
@@ -24,7 +24,7 @@ public class MovingHologram {
   }
 
   protected void onTick() {
-		this.ticksLived++;
+    ticksLived++;
     this.hologram.move(this.direction);
   }
 

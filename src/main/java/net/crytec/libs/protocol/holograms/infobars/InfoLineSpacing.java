@@ -8,7 +8,7 @@ public enum InfoLineSpacing {
 
   private final double spacingValue;
 
-  private InfoLineSpacing(final double spacingValue) {
+  private InfoLineSpacing(double spacingValue) {
     this.spacingValue = spacingValue;
   }
 

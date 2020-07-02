@@ -5,4 +5,5 @@ public enum ProtocolModule {
   NPCS,
   TABLIST,
   HOLOGRAMS
+
 }

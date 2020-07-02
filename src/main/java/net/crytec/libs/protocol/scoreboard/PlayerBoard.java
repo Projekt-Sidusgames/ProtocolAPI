@@ -25,6 +25,9 @@ package net.crytec.libs.protocol.scoreboard;
 
 import com.comphenix.protocol.wrappers.EnumWrappers.ScoreboardAction;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +40,6 @@ import net.crytec.libs.protocol.util.WrapperPlayServerScoreboardObjective.Health
 import net.crytec.libs.protocol.util.WrapperPlayServerScoreboardScore;
 import net.crytec.libs.protocol.util.WrapperPlayServerScoreboardTeam;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.ints.IntSet;
 import org.bukkit.entity.Player;
 
 public class PlayerBoard {

@@ -19,7 +19,6 @@ public class ChunkListener implements Listener {
   public void onChunkUnload(final PlayerUnloadsChunkEvent event) {
     for (final NPC<?> npc : this.manager.getNPCsInChunk(event.getPlayer().getWorld().getUID(), event.getChunkKey())) {
       npc.despawnFor(event.getPlayer());
-      System.out.println("Despawned NPC for player " + event.getPlayer().getName() + " - chunk unloaded by client");
     }
   }
 
@@ -27,7 +26,6 @@ public class ChunkListener implements Listener {
   public void onChunkLoad(final PlayerReceiveChunkEvent event) {
     for (final NPC<?> npc : this.manager.getNPCsInChunk(event.getPlayer().getWorld().getUID(), event.getChunkKey())) {
       npc.spawnFor(event.getPlayer());
-      System.out.println("Spawning NPC - Client requested a chunkload.");
     }
   }
 }

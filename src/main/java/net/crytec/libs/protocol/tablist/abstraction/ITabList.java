@@ -1,7 +1,7 @@
 package net.crytec.libs.protocol.tablist.abstraction;
 
 import java.util.Set;
-import net.minecraft.server.v1_15_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R1.PlayerConnection;
 
 /*******************************************************
  * Copyright (C) Gestankbratwurst suotokka@gmail.com

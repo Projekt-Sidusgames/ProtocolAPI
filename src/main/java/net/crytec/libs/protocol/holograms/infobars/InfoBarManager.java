@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,47 +37,47 @@ public class InfoBarManager implements Listener {
   public InfoBarManager(final JavaPlugin host, final Function<Entity, AbstractInfoBar> barSupplier) {
     this.barSupplier = barSupplier;
     this.host = host;
-    this.playerViews = Maps.newHashMap();
-    this.infoBarMap = new HashMap<>();
+    playerViews = Maps.newHashMap();
+    infoBarMap = new HashMap<>();
     Bukkit.getPluginManager().registerEvents(this, host);
-    this.hologramEntityMappings = Maps.newHashMap();
-    this.registerPacketListener(host);
-    this.runnable = new InfoBarRunnable(host, this);
+    hologramEntityMappings = new Int2ObjectOpenHashMap<>();
+    registerPacketListener(host);
+    runnable = new InfoBarRunnable(host, this);
   }
 
   private final InfoBarRunnable runnable;
   private final JavaPlugin host;
-  private final HashMap<Integer, Entity> hologramEntityMappings;
+  private final Int2ObjectOpenHashMap<Entity> hologramEntityMappings;
   private final HashMap<Integer, AbstractInfoBar> infoBarMap;
   private final Function<Entity, AbstractInfoBar> barSupplier;
   protected final Map<Player, Set<AbstractInfoBar>> playerViews;
 
   public void addMapping(final int hologramEntityID, final Entity host) {
-    this.hologramEntityMappings.put(hologramEntityID, host);
+    hologramEntityMappings.put(hologramEntityID, host);
   }
 
   @EventHandler
   public void onJoin(final PlayerJoinEvent event) {
-    this.playerViews.put(event.getPlayer(), Sets.newHashSet());
-    this.runnable.addPlayer(event.getPlayer());
+    playerViews.put(event.getPlayer(), Sets.newHashSet());
+    runnable.addPlayer(event.getPlayer());
   }
 
   @EventHandler
   public void onQuit(final PlayerQuitEvent event) {
-    this.playerViews.remove(event.getPlayer());
-    this.runnable.removePlayer(event.getPlayer());
+    playerViews.remove(event.getPlayer());
+    runnable.removePlayer(event.getPlayer());
   }
 
   @EventHandler
   protected void onDismount(final EntityDismountEvent event) {
     final int entityID = event.getDismounted().getEntityId();
-    final AbstractInfoBar infoBar = this.infoBarMap.get(entityID);
+    final AbstractInfoBar infoBar = infoBarMap.get(entityID);
     if (infoBar == null) {
       return;
     }
     for (final Player player : event.getEntity().getWorld().getPlayers()) {
       if (EntityTracker.getEntityViewOf(player).contains(entityID)) {
-        this.playerViews.get(player).add(infoBar);
+        playerViews.get(player).add(infoBar);
       }
     }
   }
@@ -84,25 +85,25 @@ public class InfoBarManager implements Listener {
   @EventHandler
   protected void onMount(final EntityMountEvent event) {
     final int entityID = event.getMount().getEntityId();
-    final AbstractInfoBar infoBar = this.infoBarMap.get(entityID);
+    final AbstractInfoBar infoBar = infoBarMap.get(entityID);
     if (infoBar == null) {
       return;
     }
     for (final Player player : Sets.newHashSet(infoBar.viewingPlayer)) {
       infoBar.hideFrom(player);
-      this.playerViews.get(player).remove(infoBar);
+      playerViews.get(player).remove(infoBar);
     }
   }
 
   @EventHandler
   protected void onEntityShowing(final PlayerReceiveEntityEvent event) {
-    Bukkit.getScheduler().runTaskLater(this.host, () -> {
-      final AbstractInfoBar bar = this.infoBarMap.get(event.getEntityID());
+    Bukkit.getScheduler().runTaskLater(host, () -> {
+      final AbstractInfoBar bar = infoBarMap.get(event.getEntityID());
       if (bar != null) {
         if (!bar.getEntity().getPassengers().isEmpty()) {
           return;
         }
-        this.playerViews.get(event.getPlayer()).add(bar);
+        playerViews.get(event.getPlayer()).add(bar);
       }
     }, 1L);
   }
@@ -110,10 +111,10 @@ public class InfoBarManager implements Listener {
   @EventHandler
   protected void onEntityHiding(final PlayerUnloadsEntityEvent event) {
     for (final Integer entityID : event.getEntityIDs()) {
-      final AbstractInfoBar bar = this.infoBarMap.get(entityID);
+      final AbstractInfoBar bar = infoBarMap.get(entityID);
       if (bar != null) {
         bar.hideFrom(event.getPlayer());
-        this.playerViews.get(event.getPlayer()).remove(bar);
+        playerViews.get(event.getPlayer()).remove(bar);
       }
     }
   }
@@ -121,14 +122,14 @@ public class InfoBarManager implements Listener {
   @EventHandler
   protected void onDeath(final EntityDeathEvent event) {
     final Integer entityID = event.getEntity().getEntityId();
-    final AbstractInfoBar bar = this.infoBarMap.get(entityID);
+    final AbstractInfoBar bar = infoBarMap.get(entityID);
     if (bar != null) {
       final Set<Player> viewing = Sets.newHashSet(bar.viewingPlayer);
       for (final Player viewer : viewing) {
         bar.hideFrom(viewer);
-        this.playerViews.get(viewer).remove(bar);
+        playerViews.get(viewer).remove(bar);
       }
-      this.infoBarMap.remove(entityID);
+      infoBarMap.remove(entityID);
     }
   }
 
@@ -136,41 +137,40 @@ public class InfoBarManager implements Listener {
   protected void onChunkUnload(final ChunkUnloadEvent event) {
     for (final Entity entity : event.getChunk().getEntities()) {
       final Integer entityID = entity.getEntityId();
-      final AbstractInfoBar bar = this.infoBarMap.get(entityID);
+      final AbstractInfoBar bar = infoBarMap.get(entityID);
       if (bar != null) {
         for (final Player player : bar.viewingPlayer) {
           if (player.isOnline()) {
             bar.hideFrom(player);
-            this.playerViews.get(player).remove(bar);
+            playerViews.get(player).remove(bar);
           }
         }
-        this.infoBarMap.remove(entityID);
+        infoBarMap.remove(entityID);
       }
     }
   }
 
   @Nullable
   public AbstractInfoBar getInfoBar(final Entity entity) {
-    return this.infoBarMap.get(entity.getEntityId());
+    return infoBarMap.get(entity.getEntityId());
   }
 
   @Nullable
   public AbstractInfoBar createInfoBar(final Entity entity) {
     final Integer entityID = entity.getEntityId();
-    AbstractInfoBar bar = this.infoBarMap.get(entityID);
+    AbstractInfoBar bar = infoBarMap.get(entityID);
     if (bar != null) {
       return bar;
     }
 
     final InfoBarCreateEvent event = new InfoBarCreateEvent(entity);
-    Bukkit.getPluginManager().callEvent(event);
-
+    event.callEvent();
     if (event.isCancelled()) {
       return bar;
     }
 
-    bar = this.barSupplier.apply(entity);
-    this.infoBarMap.put(entityID, bar);
+    bar = barSupplier.apply(entity);
+    infoBarMap.put(entityID, bar);
     final List<Pair<String, InfoLineSpacing>> lines = event.getLines();
 
     for (int i = 0; i < lines.size(); i++) {
@@ -180,7 +180,7 @@ public class InfoBarManager implements Listener {
 
     for (final Player player : entity.getWorld().getPlayers()) {
       if (EntityTracker.getEntityViewOf(player).contains(entity.getEntityId())) {
-        this.playerViews.get(player).add(bar);
+        playerViews.get(player).add(bar);
       }
     }
 
@@ -189,15 +189,15 @@ public class InfoBarManager implements Listener {
 
   public void removeInfoBar(final Entity entity) {
     final Integer entityID = entity.getEntityId();
-    final AbstractInfoBar bar = this.infoBarMap.get(entityID);
+    final AbstractInfoBar bar = infoBarMap.get(entityID);
     if (bar == null) {
       return;
     }
     for (final Player player : bar.viewingPlayer) {
       bar.hideFrom(player);
-      this.playerViews.get(player).remove(bar);
+      playerViews.get(player).remove(bar);
     }
-    this.infoBarMap.remove(entityID);
+    infoBarMap.remove(entityID);
   }
 
   private void registerPacketListener(final JavaPlugin plugin) {
@@ -207,7 +207,7 @@ public class InfoBarManager implements Listener {
       @Override
       public void onPacketReceiving(final PacketEvent event) {
         final int entityID = event.getPacket().getIntegers().getValues().get(0);
-        final Entity entity = InfoBarManager.this.hologramEntityMappings.get(entityID);
+        final Entity entity = hologramEntityMappings.get(entityID);
         if (entity != null) {
           event.getPacket().getIntegers().modify(0, (old) -> entity.getEntityId());
         }

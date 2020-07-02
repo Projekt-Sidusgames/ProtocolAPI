@@ -13,27 +13,27 @@ import net.crytec.libs.commons.utils.UtilChunk;
 import net.crytec.libs.protocol.tracking.ChunkTracker;
 import net.crytec.libs.protocol.util.WrapperPlayServerNamedEntitySpawn;
 import net.crytec.libs.protocol.util.WrapperPlayServerPlayerInfo;
-import net.minecraft.server.v1_15_R1.ChatMessage;
-import net.minecraft.server.v1_15_R1.Entity;
-import net.minecraft.server.v1_15_R1.EntityLiving;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
-import net.minecraft.server.v1_15_R1.EntityTypes;
-import net.minecraft.server.v1_15_R1.Packet;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntity.PacketPlayOutEntityLook;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_15_R1.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_15_R1.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_15_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_15_R1.PlayerConnection;
-import net.minecraft.server.v1_15_R1.PlayerInteractManager;
+import net.minecraft.server.v1_16_R1.ChatMessage;
+import net.minecraft.server.v1_16_R1.Entity;
+import net.minecraft.server.v1_16_R1.EntityLiving;
+import net.minecraft.server.v1_16_R1.EntityPlayer;
+import net.minecraft.server.v1_16_R1.EntityTypes;
+import net.minecraft.server.v1_16_R1.Packet;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntity.PacketPlayOutEntityLook;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R1.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_16_R1.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_16_R1.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_16_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R1.PlayerInteractManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public abstract class NPC<T extends EntityLiving> {
@@ -54,7 +54,7 @@ public abstract class NPC<T extends EntityLiving> {
   }
 
   protected final void createFakeEntity() {
-    final net.minecraft.server.v1_15_R1.WorldServer nmsWorld = ((CraftWorld) this.location.getWorld()).getHandle();
+    final net.minecraft.server.v1_16_R1.WorldServer nmsWorld = ((CraftWorld) this.location.getWorld()).getHandle();
 
     if (this.getType() == EntityTypes.PLAYER) {
 
@@ -190,17 +190,18 @@ public abstract class NPC<T extends EntityLiving> {
     this.sendPacketNearby(metadata);
   }
 
-  public final void sendPacketNearby(final Packet<?>... packets) {
-    if (!UtilChunk.isChunkLoaded(this.location)) {
-      return;
-    }
-    for (final Player player : this.location.getWorld().getPlayers()) {
-      if (!ChunkTracker.isChunkInView(player, this.location.getChunk())) {
-        continue;
-      }
-      for (final Packet<?> packet : packets) {
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+  public void sendPacketNearby(final Packet<?>... packets) {
+    Location location = this.getLocation();
+    if (UtilChunk.isChunkLoaded(location)) {
+      for (Player player : location.getWorld().getPlayers()) {
+        if (ChunkTracker.isChunkInView(player, location.getChunk())) {
+          PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+          for (Packet<?> packet : packets) {
+            connection.sendPacket(packet);
+          }
+        }
       }
     }
   }
+
 }

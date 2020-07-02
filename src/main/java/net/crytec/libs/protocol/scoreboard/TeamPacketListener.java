@@ -29,7 +29,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import net.crytec.libs.protocol.scoreboard.api.events.PlayerReceiveTeamEvent;
+import net.crytec.libs.protocol.events.PlayerReceiveTeamEvent;
 import net.crytec.libs.protocol.util.WrapperPlayServerScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;

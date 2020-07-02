@@ -12,9 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class InfoBarRunnable implements Runnable {
 
-  public InfoBarRunnable(final JavaPlugin host, final InfoBarManager manager) {
+  public InfoBarRunnable(JavaPlugin host, InfoBarManager manager) {
     this.tickQueues = Lists.newArrayListWithExpectedSize(20);
-    for (int index = 0; index < 20; index++) {
+    for(int index = 0; index < 20; index++) {
       this.tickQueues.add(Sets.newHashSet());
     }
     this.positionMapping = Maps.newHashMap();
@@ -29,15 +29,13 @@ public class InfoBarRunnable implements Runnable {
 
   private int getSmallestSetIndex() {
 
-    Set<Player> smallest = this.tickQueues.get(0);
+    Set<Player> smallest = tickQueues.get(0);
     int currentIndex = 0;
 
-    for (int index = 1; index < this.tickQueues.size(); index++) {
-			if (smallest.size() == 0) {
-				break;
-			}
-      final Set<Player> next = this.tickQueues.get(index);
-      if (next.size() < smallest.size()) {
+    for(int index = 1; index < tickQueues.size(); index++) {
+      if(smallest.size() == 0) break;
+      Set<Player> next = this.tickQueues.get(index);
+      if(next.size() < smallest.size()) {
         smallest = next;
         currentIndex = index;
       }
@@ -46,24 +44,24 @@ public class InfoBarRunnable implements Runnable {
     return currentIndex;
   }
 
-  public void addPlayer(final Player player) {
-    final int smallest = this.getSmallestSetIndex();
+  public void addPlayer(Player player) {
+    int smallest = this.getSmallestSetIndex();
     this.tickQueues.get(smallest).add(player);
     this.positionMapping.put(player, smallest);
   }
 
-  public void removePlayer(final Player player) {
+  public void removePlayer(Player player) {
     this.tickQueues.get(this.positionMapping.get(player)).remove(player);
     this.positionMapping.remove(player);
   }
 
-  private void checkPlayer(final Player player) {
-    for (final AbstractInfoBar info : this.manager.playerViews.get(player)) {
-      if (info.isInLineOfSight(player)) {
-        if (!info.viewingPlayer.contains(player)) {
+  private void checkPlayer(Player player) {
+    for(AbstractInfoBar info : manager.playerViews.get(player)) {
+      if(info.isInLineOfSight(player)) {
+        if(!info.viewingPlayer.contains(player)) {
           info.showTo(player);
         }
-      } else {
+      }else {
         info.hideFrom(player);
       }
     }
@@ -72,13 +70,11 @@ public class InfoBarRunnable implements Runnable {
   @Override
   public void run() {
 
-    for (final Player player : this.tickQueues.get(this.queueTick++)) {
+    for(Player player : this.tickQueues.get(this.queueTick++)) {
       this.checkPlayer(player);
     }
 
-		if (this.queueTick == 20) {
-			this.queueTick = 0;
-		}
+    if(queueTick == 20) queueTick = 0;
   }
 
 }

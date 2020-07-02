@@ -26,7 +26,7 @@ public class EntityTracker implements Listener {
 
 
   public EntityTracker(final JavaPlugin host) {
-    Bukkit.getOnlinePlayers().forEach(player -> this.playerViews.put(player, Sets.newHashSet()));
+    Bukkit.getOnlinePlayers().forEach(player -> EntityTracker.playerViews.put(player, Sets.newHashSet()));
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(host, PacketType.Play.Server.SPAWN_ENTITY_LIVING) {
 
@@ -71,22 +71,22 @@ public class EntityTracker implements Listener {
 
   @EventHandler
   public void onJoin(final PlayerJoinEvent event) {
-    this.playerViews.put(event.getPlayer(), Sets.newHashSet());
+    EntityTracker.playerViews.put(event.getPlayer(), Sets.newHashSet());
   }
 
   @EventHandler
   public void onQuit(final PlayerQuitEvent event) {
-    this.playerViews.remove(event.getPlayer());
+    EntityTracker.playerViews.remove(event.getPlayer());
   }
 
   @EventHandler
   public void onEntityShowing(final PlayerReceiveEntityEvent event) {
-    this.playerViews.get(event.getPlayer()).add(event.getEntityID());
+    EntityTracker.playerViews.get(event.getPlayer()).add(event.getEntityID());
   }
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onEntityHiding(final PlayerUnloadsEntityEvent event) {
-    final Set<Integer> ints = this.playerViews.get(event.getPlayer());
+    final Set<Integer> ints = EntityTracker.playerViews.get(event.getPlayer());
     for (final int id : event.getEntityIDs()) {
       ints.remove(id);
     }

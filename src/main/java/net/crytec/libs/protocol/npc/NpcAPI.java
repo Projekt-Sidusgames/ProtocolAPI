@@ -25,7 +25,7 @@ public class NpcAPI {
     Bukkit.getPluginManager().registerEvents(new ChunkListener(this.manager), host);
 
     ProtocolLibrary.getProtocolManager().addPacketListener(new NPCInteractListener(host, this.manager));
-    host.getLogger().info("Successfully loaded Protocol Stuff");
+    host.getLogger().info("Initialized NPC API");
 
   }
 

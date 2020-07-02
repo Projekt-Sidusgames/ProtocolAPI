@@ -4,8 +4,11 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import net.crytec.libs.commons.utils.UtilChunk;
 import net.crytec.libs.protocol.events.PlayerReceiveChunkEvent;
@@ -26,20 +29,21 @@ public abstract class AbstractHologramManager implements Listener {
 
   public AbstractHologramManager(final JavaPlugin host, final IHologramFactory factory) {
     this.factory = factory;
-    this.hologramViews = Maps.newHashMap();
-    this.entityIDMappings = Maps.newHashMap();
-    this.entityIDinverseMappings = Maps.newHashMap();
-    this.loadedHolograms = HashBasedTable.<String, Long, Map<Location, AbstractHologram>>create();
-    this.movingHolograms = Sets.newHashSet();
+    hologramIDMap = new Object2ObjectOpenHashMap<>();
+    hologramViews = new Object2ObjectOpenHashMap<>();
+    entityIDMappings = new Object2ObjectOpenHashMap<>();
+    entityIDinverseMappings = new Object2ObjectOpenHashMap<>();
+    loadedHolograms = HashBasedTable.create();
+    movingHolograms = new ObjectOpenHashSet<>();
     Bukkit.getPluginManager().registerEvents(this, host);
     Bukkit.getOnlinePlayers().forEach(
-        player -> this.hologramViews.put(player, new HologramView(player))); // Handle reloads
+        player -> hologramViews.put(player, new HologramView(player))); // Handle reloads
     Bukkit.getScheduler().runTaskTimer(host, () -> {
-      if (this.movingHolograms.isEmpty()) {
+      if (movingHolograms.isEmpty()) {
         return;
       }
       final Set<MovingHologram> removers = Sets.newHashSet();
-      for (final MovingHologram moving : this.movingHolograms) {
+      for (final MovingHologram moving : movingHolograms) {
         if (moving.isAlive()) {
           moving.onTick();
         } else {
@@ -47,7 +51,7 @@ public abstract class AbstractHologramManager implements Listener {
         }
       }
       for (final MovingHologram remov : removers) {
-        this.runOutMovingHologram(remov);
+        runOutMovingHologram(remov);
       }
     }, 1L, 1L);
   }
@@ -58,30 +62,35 @@ public abstract class AbstractHologramManager implements Listener {
   private final Map<Integer, AbstractHologram> entityIDMappings;
   private final Map<AbstractHologram, Set<Integer>> entityIDinverseMappings;
   private final Set<MovingHologram> movingHolograms;
+  private final Map<UUID, AbstractHologram> hologramIDMap;
 
   public MovingHologram createMovingHologram(final Location location, final Vector direction, final int ticksAllive) {
-    final MovingHologram moving = new MovingHologram(this.createHologram(location), direction,
+    final MovingHologram moving = new MovingHologram(createHologram(location), direction,
         ticksAllive);
-    this.movingHolograms.add(moving);
+    movingHolograms.add(moving);
     return moving;
   }
 
+  public AbstractHologram getHologram(UUID holoID) {
+    return this.hologramIDMap.get(holoID);
+  }
+
   protected void runOutMovingHologram(final MovingHologram moving) {
-    this.removeHologram(moving.getHologram());
-    this.movingHolograms.remove(moving);
+    removeHologram(moving.getHologram());
+    movingHolograms.remove(moving);
   }
 
   protected void onInteract(final Player player, final int entityID) {
-    if (!this.entityIDMappings.containsKey(entityID)) {
+    if (!entityIDMappings.containsKey(entityID)) {
       return;
     }
-    this.getRelativeLine(player, this.getHologramFromEntityID(entityID)).onClick(player);
+    getRelativeLine(player, getHologramFromEntityID(entityID)).onClick(player);
   }
 
   public Set<Player> getViewing(final AbstractHologram hologram) {
     final Set<Player> viewers = Sets.newHashSet();
     for (final Player player : Bukkit.getOnlinePlayers()) {
-      if (this.isViewing(player, hologram)) {
+      if (isViewing(player, hologram)) {
         viewers.add(player);
       }
     }
@@ -107,13 +116,13 @@ public abstract class AbstractHologramManager implements Listener {
   }
 
   private AbstractHologram getHologramFromEntityID(final int id) {
-    return this.entityIDMappings.get(id);
+    return entityIDMappings.get(id);
   }
 
   protected void setClickableIdentifier(final Set<Integer> ids, final AbstractHologram hologram) {
-    this.entityIDinverseMappings.put(hologram, ids);
+    entityIDinverseMappings.put(hologram, ids);
     for (final Integer id : ids) {
-      this.entityIDMappings.put(id, hologram);
+      entityIDMappings.put(id, hologram);
     }
   }
 
@@ -123,12 +132,12 @@ public abstract class AbstractHologramManager implements Listener {
     final Long chunkID = event.getChunkKey();
     final Player player = event.getPlayer();
 
-    if (!this.loadedHolograms.contains(worldName, chunkID)) {
+    if (!loadedHolograms.contains(worldName, chunkID)) {
       return;
     }
 
-    for (final AbstractHologram hologram : this.loadedHolograms.get(worldName, chunkID).values()) {
-      final HologramView view = this.getViewOf(player);
+    for (final AbstractHologram hologram : loadedHolograms.get(worldName, chunkID).values()) {
+      final HologramView view = getViewOf(player);
       if (hologram.isViableViewer(player)) {
         view.addHologram(hologram);
       }
@@ -141,50 +150,56 @@ public abstract class AbstractHologramManager implements Listener {
     final Long chunkID = event.getChunkKey();
     final Player player = event.getPlayer();
 
-    if (!this.loadedHolograms.contains(worldName, chunkID)) {
+    if (!loadedHolograms.contains(worldName, chunkID)) {
       return;
     }
 
-    for (final AbstractHologram hologram : this.loadedHolograms.get(worldName, chunkID).values()) {
-      final HologramView view = this.getViewOf(player);
+    for (final AbstractHologram hologram : loadedHolograms.get(worldName, chunkID).values()) {
+      final HologramView view = getViewOf(player);
       if (view.isViewing(hologram)) {
         view.removeHologram(hologram);
       }
     }
   }
 
-  public AbstractHologram createHologram(final Location location) {
-    return this.createHologram(location, (player) -> true);
+  public AbstractHologram createHologram(final Location location, UUID uid) {
+    return createHologram(location, (player) -> true, uid);
   }
 
-  public AbstractHologram createHologram(final Location location, final Predicate<Player> viewFilter) {
+  public AbstractHologram createHologram(final Location location) {
+    return createHologram(location, UUID.randomUUID());
+  }
+
+  public AbstractHologram createHologram(final Location location, final Predicate<Player> viewFilter, UUID holoID) {
+
     final World world = location.getWorld();
     final Long chunkID = UtilChunk.getChunkKey(location);
     final Map<Location, AbstractHologram> chunkHolograms;
-    if (!this.loadedHolograms.contains(world.getName(), chunkID)) {
-      this.loadedHolograms.put(world.getName(), chunkID, Maps.newHashMap());
+    if (!loadedHolograms.contains(world.getName(), chunkID)) {
+      loadedHolograms.put(world.getName(), chunkID, Maps.newHashMap());
     }
 
-    chunkHolograms = this.loadedHolograms.get(world.getName(), chunkID);
+    chunkHolograms = loadedHolograms.get(world.getName(), chunkID);
 
-    final AbstractHologram hologram = this.factory.supplyHologram(location, viewFilter, this);
+    final AbstractHologram hologram = factory.supplyHologram(location, viewFilter, this, holoID);
 
     chunkHolograms.put(location, hologram);
 
     for (final Player player : location.getWorld().getPlayers()) {
-      if (ChunkTracker.getChunkViewOf(player).contains(chunkID)) {
-        final HologramView view = this.getViewOf(player);
+      if (ChunkTracker.getChunkViews(player).contains(chunkID)) {
+        final HologramView view = getViewOf(player);
         if (hologram.isViableViewer(player)) {
           view.addHologram(hologram);
         }
       }
     }
 
+    this.hologramIDMap.put(holoID, hologram);
     return hologram;
   }
 
   public void removeHologram(final AbstractHologram hologram) {
-    for (final HologramView view : this.hologramViews.values()) {
+    for (final HologramView view : hologramViews.values()) {
       if (view.isViewing(hologram)) {
         view.removeHologram(hologram);
       }
@@ -192,35 +207,36 @@ public abstract class AbstractHologramManager implements Listener {
     final Location holoLoc = hologram.getBaseLocation();
     final World holoWorld = holoLoc.getWorld();
     final Long chunkID = UtilChunk.getChunkKey(holoLoc);
-    final Map<Location, AbstractHologram> chunkMap = this.loadedHolograms.get(holoWorld.getName(), chunkID);
+    final Map<Location, AbstractHologram> chunkMap = loadedHolograms.get(holoWorld.getName(), chunkID);
     chunkMap.remove(holoLoc);
-    if (this.entityIDinverseMappings.containsKey(hologram)) {
-      for (final Integer id : this.entityIDinverseMappings.get(hologram)) {
-        this.entityIDMappings.remove(id);
+    if (entityIDinverseMappings.containsKey(hologram)) {
+      for (final Integer id : entityIDinverseMappings.get(hologram)) {
+        entityIDMappings.remove(id);
       }
-      this.entityIDinverseMappings.remove(hologram);
+      entityIDinverseMappings.remove(hologram);
     }
     //TODO if memory leaks. Fix
 //    if (chunkMap.isEmpty()) {
 //      loadedHolograms.remove(holoWorld.getName(), chunkID);
 //    }
+    this.hologramIDMap.remove(hologram.getHoloID());
   }
 
   public boolean isViewing(final Player player, final AbstractHologram hologram) {
-    return this.hologramViews.get(player).isViewing(hologram);
+    return hologramViews.get(player).isViewing(hologram);
   }
 
   public HologramView getViewOf(final Player player) {
-    return this.hologramViews.get(player);
+    return hologramViews.get(player);
   }
 
   @EventHandler
   public void handleJoin(final PlayerJoinEvent event) {
-    this.hologramViews.put(event.getPlayer(), new HologramView(event.getPlayer()));
+    hologramViews.put(event.getPlayer(), new HologramView(event.getPlayer()));
   }
 
   @EventHandler
   public void handleQuit(final PlayerQuitEvent event) {
-    this.hologramViews.remove(event.getPlayer());
+    hologramViews.remove(event.getPlayer());
   }
 }

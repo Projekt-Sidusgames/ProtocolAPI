@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 public abstract class AbstractInfoBar {
 
-  public AbstractInfoBar(final Entity entity, final InfoBarManager infoBarManager) {
+  public AbstractInfoBar(Entity entity, InfoBarManager infoBarManager) {
     this.viewingPlayer = Sets.newHashSet();
     this.entity = entity;
     this.infoBarManager = infoBarManager;
