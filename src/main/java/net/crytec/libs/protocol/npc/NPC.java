@@ -191,12 +191,12 @@ public abstract class NPC<T extends EntityLiving> {
   }
 
   public void sendPacketNearby(final Packet<?>... packets) {
-    Location location = this.getLocation();
+    final Location location = this.getLocation();
     if (UtilChunk.isChunkLoaded(location)) {
-      for (Player player : location.getWorld().getPlayers()) {
+      for (final Player player : location.getWorld().getPlayers()) {
         if (ChunkTracker.isChunkInView(player, location.getChunk())) {
-          PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-          for (Packet<?> packet : packets) {
+          final PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
+          for (final Packet<?> packet : packets) {
             connection.sendPacket(packet);
           }
         }

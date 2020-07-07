@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_16_R1.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_16_R1.util.CraftNamespacedKey;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 
@@ -27,30 +26,25 @@ public class NPCVillager extends NPC<EntityVillager> {
     return EntityTypes.VILLAGER;
   }
 
-  @Override
-  public void onPlayerInteraction(final Player player) {
-    player.sendMessage("Yay! Ich bin ein NPC!");
-  }
-
   public void setProfession(final Profession profession) {
     Validate.notNull(profession);
-    EntityVillager nmsVillager = this.getFakeEntity();
-    VillagerData villagerData = nmsVillager.getVillagerData().withProfession(CraftVillager.bukkitToNmsProfession(profession));
+    final EntityVillager nmsVillager = this.getFakeEntity();
+    final VillagerData villagerData = nmsVillager.getVillagerData().withProfession(CraftVillager.bukkitToNmsProfession(profession));
     this.getFakeEntity().setVillagerData(villagerData);
     this.updateMetadata();
     this.sendPacketNearby(this.getMetaDataPacket());
-    this.getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 1F, 1F);
+    this.getLocation().getWorld().playSound(this.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 1F, 1F);
   }
 
   public void setType(final Villager.Type type) {
     Validate.notNull(type);
-    EntityVillager nmsVillager = this.getFakeEntity();
-    VillagerType nmsType = IRegistry.VILLAGER_TYPE.get(CraftNamespacedKey.toMinecraft(type.getKey()));
-    VillagerData villagerData = nmsVillager.getVillagerData().withType(nmsType);
+    final EntityVillager nmsVillager = this.getFakeEntity();
+    final VillagerType nmsType = IRegistry.VILLAGER_TYPE.get(CraftNamespacedKey.toMinecraft(type.getKey()));
+    final VillagerData villagerData = nmsVillager.getVillagerData().withType(nmsType);
     this.getFakeEntity().setVillagerData(villagerData);
     this.updateMetadata();
     this.sendPacketNearby(this.getMetaDataPacket());
-    this.getLocation().getWorld().playSound(getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 1F, 1F);
+    this.getLocation().getWorld().playSound(this.getLocation(), Sound.ENTITY_VILLAGER_AMBIENT, 1F, 1F);
   }
 
 }
