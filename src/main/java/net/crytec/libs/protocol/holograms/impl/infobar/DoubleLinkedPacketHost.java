@@ -5,8 +5,8 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.base.Preconditions;
 import java.lang.reflect.InvocationTargetException;
-import net.minecraft.server.v1_16_R1.Packet;
-import net.minecraft.server.v1_16_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R2.Packet;
+import net.minecraft.server.v1_16_R2.PlayerConnection;
 import org.bukkit.entity.Player;
 
 public class DoubleLinkedPacketHost {

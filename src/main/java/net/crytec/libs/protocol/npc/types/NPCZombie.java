@@ -1,11 +1,11 @@
 package net.crytec.libs.protocol.npc.types;
 
 import net.crytec.libs.protocol.npc.NPC;
-import net.minecraft.server.v1_16_R1.EntityTypes;
-import net.minecraft.server.v1_16_R1.EntityZombie;
-import net.minecraft.server.v1_16_R1.EnumItemSlot;
+import net.minecraft.server.v1_16_R2.EntityTypes;
+import net.minecraft.server.v1_16_R2.EntityZombie;
+import net.minecraft.server.v1_16_R2.EnumItemSlot;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 public class NPCZombie extends NPC<EntityZombie> {
@@ -26,7 +26,7 @@ public class NPCZombie extends NPC<EntityZombie> {
   }
 
   public void setItemInHand(final ItemStack item) {
-    super.getFakeEntity().setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(item));
+    super.getFakeEntity().setSlot(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(item));
     super.updateMetadata();
     super.sendPacketNearby(this.getMetaDataPacket());
   }

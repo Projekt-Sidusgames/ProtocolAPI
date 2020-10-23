@@ -14,21 +14,21 @@ import net.crytec.libs.protocol.holograms.infobars.AbstractInfoBar;
 import net.crytec.libs.protocol.holograms.infobars.InfoBarManager;
 import net.crytec.libs.protocol.holograms.infobars.InfoLineSpacing;
 import net.crytec.libs.protocol.util.WrapperPlayServerMount;
-import net.minecraft.server.v1_16_R1.ChatMessage;
-import net.minecraft.server.v1_16_R1.EntityArmorStand;
-import net.minecraft.server.v1_16_R1.EntityPig;
-import net.minecraft.server.v1_16_R1.EntityRabbit;
-import net.minecraft.server.v1_16_R1.EntityTurtle;
-import net.minecraft.server.v1_16_R1.EntityTypes;
-import net.minecraft.server.v1_16_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_16_R1.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_16_R1.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_16_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R2.ChatMessage;
+import net.minecraft.server.v1_16_R2.EntityArmorStand;
+import net.minecraft.server.v1_16_R2.EntityPig;
+import net.minecraft.server.v1_16_R2.EntityRabbit;
+import net.minecraft.server.v1_16_R2.EntityTurtle;
+import net.minecraft.server.v1_16_R2.EntityTypes;
+import net.minecraft.server.v1_16_R2.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R2.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R2.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_16_R2.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R2.PlayerConnection;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -110,7 +110,7 @@ public class InfoBar extends AbstractInfoBar {
 
     final ArrayList<Supplier<DoubleLinkedPacketHost>> newPackets = Lists.newArrayList();
 
-    final net.minecraft.server.v1_16_R1.Entity hostEntity = this.lines.size() == 0 ?
+    final net.minecraft.server.v1_16_R2.Entity hostEntity = this.lines.size() == 0 ?
         ((CraftEntity) this.entity).getHandle() : this.lines.get(this.lines.size() - 1);
 
     newPackets.add(spacingPart::getLivingPacket);
@@ -146,8 +146,8 @@ public class InfoBar extends AbstractInfoBar {
     }
   }
 
-  private DoubleLinkedPacketHost getMountPacket(final net.minecraft.server.v1_16_R1.Entity mount,
-      final net.minecraft.server.v1_16_R1.Entity rider) {
+  private DoubleLinkedPacketHost getMountPacket(final net.minecraft.server.v1_16_R2.Entity mount,
+      final net.minecraft.server.v1_16_R2.Entity rider) {
     final WrapperPlayServerMount packet = new WrapperPlayServerMount();
     packet.setEntityID(mount.getId());
     packet.setPassengerIds(new int[]{rider.getId()});
@@ -162,7 +162,7 @@ public class InfoBar extends AbstractInfoBar {
 
   interface LinePart {
 
-    net.minecraft.server.v1_16_R1.Entity getHandle();
+    net.minecraft.server.v1_16_R2.Entity getHandle();
 
     DoubleLinkedPacketHost getSpawnPacket();
 
@@ -225,7 +225,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_16_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R2.Entity getHandle() {
       return this;
     }
 
@@ -274,7 +274,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_16_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R2.Entity getHandle() {
       return this;
     }
 
@@ -323,7 +323,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_16_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R2.Entity getHandle() {
       return this;
     }
 
@@ -372,7 +372,7 @@ public class InfoBar extends AbstractInfoBar {
     }
 
     @Override
-    public net.minecraft.server.v1_16_R1.Entity getHandle() {
+    public net.minecraft.server.v1_16_R2.Entity getHandle() {
       return this;
     }
 
