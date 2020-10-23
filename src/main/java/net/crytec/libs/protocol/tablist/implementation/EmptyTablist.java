@@ -7,9 +7,9 @@ import java.util.Set;
 import net.crytec.libs.protocol.tablist.TabListManager;
 import net.crytec.libs.protocol.tablist.abstraction.ITabLine;
 import net.crytec.libs.protocol.tablist.abstraction.ITabList;
-import net.minecraft.server.v1_16_R1.ChatMessage;
-import net.minecraft.server.v1_16_R1.PacketPlayOutPlayerListHeaderFooter;
-import net.minecraft.server.v1_16_R1.PlayerConnection;
+import net.minecraft.server.v1_16_R2.ChatMessage;
+import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_16_R2.PlayerConnection;
 
 /*******************************************************
  * Copyright (C) Gestankbratwurst suotokka@gmail.com
