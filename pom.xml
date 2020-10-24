@@ -47,7 +47,7 @@
     <dependency>
       <groupId>net.crytec.libs</groupId>
       <artifactId>commons</artifactId>
-      <version>1.3.1-SNAPSHOT</version>
+      <version>1.4.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <!--Lombok-->
@@ -69,12 +69,12 @@
 
   <repositories>
     <repository>
-      <id>avarion-dev</id>
+      <id>avarion-dev-releases</id>
       <url>http://168.119.168.65:8081/repository/maven-releases/</url>
     </repository>
     <repository>
-      <id>papermc</id>
-      <url>https://papermc.io/repo/repository/maven-public/</url>
+      <id>avarion-dev</id>
+      <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
     </repository>
     <repository>
       <id>aikar</id>
