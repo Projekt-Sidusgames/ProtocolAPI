@@ -17,11 +17,11 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>nexus-snapshots</id>
+      <id>avarion-dev</id>
       <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>nexus-releases</id>
+      <id>avarion-dev</id>
       <url>http://168.119.168.65:8081/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
