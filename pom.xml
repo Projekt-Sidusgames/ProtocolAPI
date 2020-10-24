@@ -30,14 +30,8 @@
   <dependencies>
     <dependency>
       <groupId>com.destroystokyo.paper</groupId>
-      <artifactId>paper</artifactId>
-      <version>1.16.3-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.destroystokyo.paper</groupId>
-      <artifactId>paper-api</artifactId>
-      <version>1.16.1-R0.1-SNAPSHOT</version>
+      <artifactId>papercraft</artifactId>
+      <version>1.16.3</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -76,8 +70,8 @@
 
   <repositories>
     <repository>
-      <id>avarion-private</id>
-      <url>http://repo.avarioncraft.de/repository/development/</url>
+      <id>avarion-dev</id>
+      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
     </repository>
     <repository>
       <id>papermc</id>
@@ -130,8 +124,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
         <configuration>
-          <source>14</source>
-          <target>14</target>
+          <source>15</source>
+          <target>15</target>
           <encoding>UTF-8</encoding>
           <compilerArgs>
             <arg>-parameters</arg>
