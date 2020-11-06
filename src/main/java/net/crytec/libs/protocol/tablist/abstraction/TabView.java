@@ -2,8 +2,8 @@ package net.crytec.libs.protocol.tablist.abstraction;
 
 
 import lombok.Getter;
-import net.minecraft.server.v1_16_R2.PlayerConnection;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import net.minecraft.server.v1_16_R3.PlayerConnection;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /*******************************************************

@@ -1,16 +1,16 @@
 package net.crytec.libs.protocol.npc.types;
 
 import net.crytec.libs.protocol.npc.NPC;
-import net.minecraft.server.v1_16_R2.EntityTypes;
-import net.minecraft.server.v1_16_R2.EntityVillager;
-import net.minecraft.server.v1_16_R2.IRegistry;
-import net.minecraft.server.v1_16_R2.VillagerData;
-import net.minecraft.server.v1_16_R2.VillagerType;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.EntityVillager;
+import net.minecraft.server.v1_16_R3.IRegistry;
+import net.minecraft.server.v1_16_R3.VillagerData;
+import net.minecraft.server.v1_16_R3.VillagerType;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftVillager;
-import org.bukkit.craftbukkit.v1_16_R2.util.CraftNamespacedKey;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftVillager;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
 

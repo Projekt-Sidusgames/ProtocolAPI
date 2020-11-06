@@ -13,27 +13,27 @@ import net.crytec.libs.commons.utils.UtilChunk;
 import net.crytec.libs.protocol.tracking.ChunkTracker;
 import net.crytec.libs.protocol.util.WrapperPlayServerNamedEntitySpawn;
 import net.crytec.libs.protocol.util.WrapperPlayServerPlayerInfo;
-import net.minecraft.server.v1_16_R2.ChatMessage;
-import net.minecraft.server.v1_16_R2.Entity;
-import net.minecraft.server.v1_16_R2.EntityLiving;
-import net.minecraft.server.v1_16_R2.EntityPlayer;
-import net.minecraft.server.v1_16_R2.EntityTypes;
-import net.minecraft.server.v1_16_R2.Packet;
-import net.minecraft.server.v1_16_R2.PacketPlayOutEntity.PacketPlayOutEntityLook;
-import net.minecraft.server.v1_16_R2.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_16_R2.PacketPlayOutEntityMetadata;
-import net.minecraft.server.v1_16_R2.PacketPlayOutEntityTeleport;
-import net.minecraft.server.v1_16_R2.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_16_R2.PacketPlayOutSpawnEntity;
-import net.minecraft.server.v1_16_R2.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_16_R2.PlayerConnection;
-import net.minecraft.server.v1_16_R2.PlayerInteractManager;
+import net.minecraft.server.v1_16_R3.ChatMessage;
+import net.minecraft.server.v1_16_R3.Entity;
+import net.minecraft.server.v1_16_R3.EntityLiving;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.EntityTypes;
+import net.minecraft.server.v1_16_R3.Packet;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntity.PacketPlayOutEntityLook;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_16_R3.PacketPlayOutEntityTeleport;
+import net.minecraft.server.v1_16_R3.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntity;
+import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_16_R3.PlayerConnection;
+import net.minecraft.server.v1_16_R3.PlayerInteractManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public abstract class NPC<T extends EntityLiving> {
@@ -54,7 +54,7 @@ public abstract class NPC<T extends EntityLiving> {
   }
 
   protected final void createFakeEntity() {
-    final net.minecraft.server.v1_16_R2.WorldServer nmsWorld = ((CraftWorld) this.location.getWorld()).getHandle();
+    final net.minecraft.server.v1_16_R3.WorldServer nmsWorld = ((CraftWorld) this.location.getWorld()).getHandle();
 
     if (this.getType() == EntityTypes.PLAYER) {
 

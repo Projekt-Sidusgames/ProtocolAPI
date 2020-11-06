@@ -5,17 +5,17 @@ import com.mojang.authlib.properties.Property;
 import java.util.UUID;
 import lombok.Getter;
 import net.crytec.libs.protocol.tablist.abstraction.ITabLine;
-import net.minecraft.server.v1_16_R2.ChatMessage;
-import net.minecraft.server.v1_16_R2.EntityPlayer;
-import net.minecraft.server.v1_16_R2.MinecraftServer;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_16_R2.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_16_R2.PlayerConnection;
-import net.minecraft.server.v1_16_R2.PlayerInteractManager;
-import net.minecraft.server.v1_16_R2.World;
-import net.minecraft.server.v1_16_R2.WorldServer;
+import net.minecraft.server.v1_16_R3.ChatMessage;
+import net.minecraft.server.v1_16_R3.EntityPlayer;
+import net.minecraft.server.v1_16_R3.MinecraftServer;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_16_R3.PlayerConnection;
+import net.minecraft.server.v1_16_R3.PlayerInteractManager;
+import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_16_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 
 /*******************************************************
  * Copyright (C) Gestankbratwurst suotokka@gmail.com
