@@ -91,11 +91,20 @@ public class InfoBar extends AbstractInfoBar {
 
   @Override
   public void addLine(final String newLine, final InfoLineSpacing spacing) {
-    final LinePart spacingPart = switch (spacing) {
-      case LARGE -> new LargeSpacingEntity(this.entity.getLocation());
-      case MEDIUM -> new MediumSpacingEntity(this.entity.getLocation());
-      case SMALL -> new SmallSpacingEntity(this.entity.getLocation());
-    };
+    final LinePart spacingPart;
+    switch (spacing) {
+      case LARGE:
+        spacingPart = new LargeSpacingEntity(this.entity.getLocation());
+        break;
+      case MEDIUM:
+        spacingPart = new MediumSpacingEntity(this.entity.getLocation());
+        break;
+      case SMALL:
+        spacingPart = new SmallSpacingEntity(this.entity.getLocation());
+        break;
+      default:
+        throw new IllegalStateException("Unexpected value: " + spacing);
+    }
 
     final LineEntity lineEntity = new LineEntity(this.entity.getLocation(), newLine);
 

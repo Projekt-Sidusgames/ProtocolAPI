@@ -25,7 +25,6 @@ public class NpcAPI {
     if (plugin == null) {
       throw new UnsupportedOperationException("Unable to initialize ProtocolAPI - ProtocolLib is not installed on this server.");
     }
-    CraftChunk c;
     this.manager = new NpcManager();
     Bukkit.getPluginManager().registerEvents(new ChunkListener(this.manager), host);
 
