@@ -9,29 +9,24 @@
   <version>1.4.1-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.target>15</maven.compiler.target>
-    <maven.compiler.source>15</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <distributionManagement>
     <snapshotRepository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
+      <id>sidus-snapshots</id>
+      <url>http://repo.sidusgames.eu/repository/maven-snapshots/</url>
     </snapshotRepository>
-    <repository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
-    </repository>
   </distributionManagement>
 
   <dependencies>
     <dependency>
       <groupId>com.destroystokyo.paper</groupId>
-      <artifactId>papercraft</artifactId>
+      <artifactId>paper-mc</artifactId>
       <version>1.16.4</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.comphenix.protocol</groupId>
@@ -47,7 +42,7 @@
     <dependency>
       <groupId>net.crytec.libs</groupId>
       <artifactId>commons</artifactId>
-      <version>1.4.0-SNAPSHOT</version>
+      <version>1.4.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <!--Lombok-->
@@ -69,12 +64,12 @@
 
   <repositories>
     <repository>
-      <id>avarion-dev-releases</id>
-      <url>http://168.119.168.65:8081/repository/maven-releases/</url>
+      <id>sidus-releases</id>
+      <url>http://repo.sidusgames.eu/repository/maven-releases/</url>
     </repository>
     <repository>
-      <id>avarion-dev</id>
-      <url>http://168.119.168.65:8081/repository/maven-snapshots/</url>
+      <id>sidus-snapshots</id>
+      <url>http://repo.sidusgames.eu/repository/maven-snapshots/</url>
     </repository>
     <repository>
       <id>aikar</id>
@@ -104,7 +99,7 @@
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
+        <version>1.5.1</version>
         <executions>
           <execution>
             <id>default-deploy</id>
@@ -115,20 +110,9 @@
           </execution>
         </executions>
         <configuration>
+          <serverId>sidus-nexus</serverId>
+          <nexusUrl>http://repo.sidusgames.eu</nexusUrl>
           <skipStaging>true</skipStaging>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <source>15</source>
-          <target>15</target>
-          <encoding>UTF-8</encoding>
-          <compilerArgs>
-            <arg>-parameters</arg>
-          </compilerArgs>
         </configuration>
       </plugin>
     </plugins>
