@@ -79,8 +79,9 @@ public abstract class NPC<T extends EntityLiving> {
       this.spawnPacket = new PacketPlayOutSpawnEntityLiving((EntityLiving) this.fakeEntity);
     } else {
       this.spawnPacket = new PacketPlayOutSpawnEntity(this.fakeEntity);
-      this.metaDataPacket = new PacketPlayOutEntityMetadata(this.fakeEntity.getId(), this.fakeEntity.getDataWatcher(), true);
     }
+
+    this.metaDataPacket = new PacketPlayOutEntityMetadata(this.fakeEntity.getId(), this.fakeEntity.getDataWatcher(), true);
 
   }
 
@@ -150,6 +151,7 @@ public abstract class NPC<T extends EntityLiving> {
     }
 
     connection.sendPacket(this.getSpawnPacket());
+    updateMetadata();
     Bukkit.getScheduler().runTaskLater(NpcAPI.host, () -> connection.sendPacket(this.getMetaDataPacket()), 2L);
   }
 
