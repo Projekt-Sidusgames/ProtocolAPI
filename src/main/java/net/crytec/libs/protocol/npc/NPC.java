@@ -146,12 +146,11 @@ public abstract class NPC<T extends EntityLiving> {
       Bukkit.getScheduler().runTaskLater(NpcAPI.host, () -> connection.sendPacket(this.getMetaDataPacket()), 3L);
       Bukkit.getScheduler().runTaskLater(NpcAPI.host, hideTab::broadcastPacket, 5L);
 
-      System.out.println("Handled Player Spawn!");
       return;
     }
 
     connection.sendPacket(this.getSpawnPacket());
-    connection.sendPacket(this.getMetaDataPacket());
+    Bukkit.getScheduler().runTaskLater(NpcAPI.host, () -> connection.sendPacket(this.getMetaDataPacket()), 2L);
   }
 
   protected void updateMetadata() {
