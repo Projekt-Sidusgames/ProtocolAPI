@@ -31,7 +31,7 @@ public class NPCVillager extends NPC<EntityVillager> {
   @Getter
   private Profession profession;
   @Getter
-  private Type type;
+  private Type villagerType;
 
   public void setProfession(final Profession profession) {
     Validate.notNull(profession);
@@ -46,7 +46,7 @@ public class NPCVillager extends NPC<EntityVillager> {
 
   public void setType(final Villager.Type type) {
     Validate.notNull(type);
-    this.type = type;
+    this.villagerType = type;
     final EntityVillager nmsVillager = this.getFakeEntity();
     final VillagerType nmsType = IRegistry.VILLAGER_TYPE.get(CraftNamespacedKey.toMinecraft(type.getKey()));
     final VillagerData villagerData = nmsVillager.getVillagerData().withType(nmsType);
