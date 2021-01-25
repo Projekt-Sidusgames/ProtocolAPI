@@ -1,5 +1,6 @@
 package net.crytec.libs.protocol.npc.types;
 
+import lombok.Getter;
 import net.crytec.libs.protocol.npc.NPC;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.EntityVillager;
@@ -13,6 +14,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftVillager;
 import org.bukkit.craftbukkit.v1_16_R3.util.CraftNamespacedKey;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Villager.Type;
 
 public class NPCVillager extends NPC<EntityVillager> {
 
@@ -26,8 +28,14 @@ public class NPCVillager extends NPC<EntityVillager> {
     return EntityTypes.VILLAGER;
   }
 
+  @Getter
+  private Profession profession;
+  @Getter
+  private Type type;
+
   public void setProfession(final Profession profession) {
     Validate.notNull(profession);
+    this.profession = profession;
     final EntityVillager nmsVillager = this.getFakeEntity();
     final VillagerData villagerData = nmsVillager.getVillagerData().withProfession(CraftVillager.bukkitToNmsProfession(profession));
     this.getFakeEntity().setVillagerData(villagerData);
@@ -38,6 +46,7 @@ public class NPCVillager extends NPC<EntityVillager> {
 
   public void setType(final Villager.Type type) {
     Validate.notNull(type);
+    this.type = type;
     final EntityVillager nmsVillager = this.getFakeEntity();
     final VillagerType nmsType = IRegistry.VILLAGER_TYPE.get(CraftNamespacedKey.toMinecraft(type.getKey()));
     final VillagerData villagerData = nmsVillager.getVillagerData().withType(nmsType);
