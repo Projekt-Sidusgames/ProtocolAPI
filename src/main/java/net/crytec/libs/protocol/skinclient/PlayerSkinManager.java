@@ -114,8 +114,8 @@ public class PlayerSkinManager {
       throws IOException {
     final BufferedImage headImage = ImageIO.read(imageFile);
     final double widthScale = 8D / (double) headImage.getWidth();
-    final double heaightScale = 8D / (double) headImage.getWidth();
-    final BufferedImage image = this.scale(headImage, widthScale, heaightScale);
+    final double heightScale = 8D / (double) headImage.getWidth();
+    final BufferedImage image = this.scale(headImage, widthScale, heightScale);
     final File uploadFile = new File(imageFile.getParent(), imageFile.getName().replace(".png", "") + "_8.png");
     ImageIO.write(image, "png", uploadFile);
     this.uploadHeadImage(uploadFile, name, skinCallback);
@@ -159,7 +159,7 @@ public class PlayerSkinManager {
     @Override
     public void uploading() {
       System.out.println("§e[MineskinClient]§f Uploading File...");
-      this.locked = false;
+      this.locked = true;
     }
 
     @Override
