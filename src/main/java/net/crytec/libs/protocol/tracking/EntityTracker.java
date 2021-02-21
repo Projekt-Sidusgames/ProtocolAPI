@@ -42,8 +42,8 @@ public class EntityTracker implements Listener {
           final Player viewer = event.getPlayer();
           final int entityID = packet.getIntegers().read(0);
 
-          final PlayerReceiveEntityEvent recieveEvent = new PlayerReceiveEntityEvent(viewer, entityID);
-          Bukkit.getScheduler().runTask(host, () -> Bukkit.getPluginManager().callEvent(recieveEvent));
+          final PlayerReceiveEntityEvent receiveEvent = new PlayerReceiveEntityEvent(viewer, entityID);
+          Bukkit.getScheduler().runTask(host, () -> Bukkit.getPluginManager().callEvent(receiveEvent));
         }
       }
     });
@@ -69,7 +69,7 @@ public class EntityTracker implements Listener {
     });
   }
 
-  @EventHandler
+  @EventHandler(priority = EventPriority.LOWEST)
   public void onJoin(final PlayerJoinEvent event) {
     EntityTracker.playerViews.put(event.getPlayer(), Sets.newHashSet());
   }

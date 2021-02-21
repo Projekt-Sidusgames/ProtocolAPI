@@ -20,7 +20,13 @@ public class NPCVillager extends NPC<EntityVillager> {
 
 
   public NPCVillager(final Location location) {
+    this(location, Profession.NONE, Type.PLAINS);
+  }
+
+  public NPCVillager(final Location location, Profession profession, Type type) {
     super(location);
+    setProfession(profession);
+    setType(type);
   }
 
   @Override

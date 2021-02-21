@@ -58,7 +58,7 @@ public abstract class NPC<T extends EntityLiving> {
 
     if (this.getType() == EntityTypes.PLAYER) {
 
-      final GameProfile profile = new GameProfile(UUID.randomUUID(), "APINPC");
+      final GameProfile profile = new GameProfile(UUID.randomUUID(), "API_NPC");
       this.fakeEntity = new EntityPlayer(nmsWorld.getMinecraftServer(), nmsWorld, profile, new PlayerInteractManager(nmsWorld));
       ((EntityPlayer) this.fakeEntity).listName = new ChatMessage("placeholder");
     } else {

@@ -123,7 +123,7 @@ public class MineskinClient {
             .method(Connection.Method.POST)
             .ignoreContentType(true)
             .ignoreHttpErrors(true)
-            .timeout(10000);
+            .timeout(40000);
         String body = connection.execute().body();
         handleResponse(body, callback);
       } catch (Exception e) {
@@ -144,7 +144,7 @@ public class MineskinClient {
    * @param file     File to upload
    * @param callback {@link SkinCallback}
    */
-  public void generateUpload(File file, SkinCallback callback, boolean deleteFile) {
+  public void generateUpload(File file, SkinCallback callback) {
     generateUpload(file, SkinOptions.none(), callback);
   }
 
@@ -176,7 +176,7 @@ public class MineskinClient {
             .data("file", file.getName(), new FileInputStream(file))
             .ignoreContentType(true)
             .ignoreHttpErrors(true)
-            .timeout(10000);
+            .timeout(40000);
         String body = connection.execute().body();
         handleResponse(body, callback);
       } catch (Exception e) {
@@ -228,7 +228,7 @@ public class MineskinClient {
             .method(Connection.Method.GET)
             .ignoreContentType(true)
             .ignoreHttpErrors(true)
-            .timeout(10000);
+            .timeout(40000);
         String body = connection.execute().body();
         handleResponse(body, callback);
       } catch (Exception e) {
