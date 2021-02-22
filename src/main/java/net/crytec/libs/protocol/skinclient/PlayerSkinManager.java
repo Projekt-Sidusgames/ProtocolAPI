@@ -44,10 +44,9 @@ public class PlayerSkinManager {
   public void cacheSkins(final File cacheFile) throws IOException {
     final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     final JsonObject json = new JsonObject();
-    this.skinMap.entrySet().forEach(entry -> {
-      Object src;
-      final JsonObject skinJson = gson.toJsonTree(entry.getValue()).getAsJsonObject();
-      json.add("" + entry.getKey(), skinJson);
+    this.skinMap.forEach((key, value) -> {
+      final JsonObject skinJson = gson.toJsonTree(value).getAsJsonObject();
+      json.add("" + key, skinJson);
     });
     final OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(cacheFile));
     osw.write(gson.toJson(json));
@@ -84,7 +83,8 @@ public class PlayerSkinManager {
 
   public void uploadImage(final File imageFile, final String name, final ConsumingCallback skinCallback) throws IOException {
     final BufferedImage image = ImageIO.read(imageFile);
-    Preconditions.checkArgument(image.getWidth() == 64 && image.getHeight() == 64);
+
+    // Preconditions.checkArgument(image.getWidth() == 64 && image.getHeight() == 64);
 
     this.mineskinClient.generateUpload(imageFile, SkinOptions.create(name, Model.DEFAULT, Visibility.PRIVATE), skinCallback);
   }
@@ -165,16 +165,19 @@ public class PlayerSkinManager {
     @Override
     public void error(final String errorMessage) {
       System.out.println("§e[MineskinClient]§c Error: " + errorMessage);
+      locked = false;
     }
 
     @Override
     public void exception(final Exception exception) {
       exception.printStackTrace();
+      locked = false;
     }
 
     @Override
     public void waiting(final long delay) {
       System.out.println("§e[MineskinClient]§f Waiting §e" + (delay + 1000) + "ms §fon connection.");
+      locked = true;
     }
 
   }
