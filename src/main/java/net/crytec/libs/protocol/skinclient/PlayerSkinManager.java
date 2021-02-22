@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.imageio.ImageIO;
 import net.crytec.libs.protocol.skinclient.data.Skin;
@@ -75,14 +77,25 @@ public class PlayerSkinManager {
   }
 
   public void requestSkin(final int id, final ConsumingCallback skinCallback) {
-    if (this.skinMap.containsKey(id)) {
+    Skin skin = skinMap.get(id);
+    if (skin != null) {
+      long unixWeek = TimeUnit.DAYS.toMillis(7);
+      long unixDay = unixWeek / 7;
+      if (skin.timestamp + unixWeek + ThreadLocalRandom.current().nextLong(-unixDay, unixDay) < System.currentTimeMillis()) {
+        System.out.println("§7[MineskinClient]§7 Skin with ID [" + id + "] has old cache data. Downloading.");
+        this.mineskinClient.getSkin(id, skinCallback);
+        return;
+      }
+      System.out.println("§7[MineskinClient]§7 Getting Skin with ID [" + id + "] from skin cache.");
       skinCallback.skinConsumer.accept(this.skinMap.get(id));
+      return;
     }
+    System.out.println("§7[MineskinClient]§7 Downloading Skin with ID [" + id + "] from Mineskin.");
     this.mineskinClient.getSkin(id, skinCallback);
   }
 
   public void uploadImage(final File imageFile, final String name, final ConsumingCallback skinCallback) throws IOException {
-    final BufferedImage image = ImageIO.read(imageFile);
+    // final BufferedImage image = ImageIO.read(imageFile);
 
     // Preconditions.checkArgument(image.getWidth() == 64 && image.getHeight() == 64);
 
@@ -158,13 +171,13 @@ public class PlayerSkinManager {
 
     @Override
     public void uploading() {
-      System.out.println("§e[MineskinClient]§f Uploading File...");
+      System.out.println("§7[MineskinClient]§7 Uploading File...");
       this.locked = true;
     }
 
     @Override
     public void error(final String errorMessage) {
-      System.out.println("§e[MineskinClient]§c Error: " + errorMessage);
+      System.out.println("§7[MineskinClient]§c Error: " + errorMessage);
       locked = false;
     }
 
@@ -176,7 +189,7 @@ public class PlayerSkinManager {
 
     @Override
     public void waiting(final long delay) {
-      System.out.println("§e[MineskinClient]§f Waiting §e" + (delay + 1000) + "ms §fon connection.");
+      System.out.println("§7[MineskinClient]§7 Waiting §e" + (delay + 1000) + "ms §fon connection.");
       locked = true;
     }
 
