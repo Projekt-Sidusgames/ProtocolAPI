@@ -12,6 +12,7 @@ public class Skin {
   public boolean prvate;
   public int views;
   public int accountId;
+  public long downloadTimestamp;
 
   public double nextRequest;
 

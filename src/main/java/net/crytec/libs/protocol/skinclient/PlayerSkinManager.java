@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -38,8 +40,10 @@ public class PlayerSkinManager {
   public PlayerSkinManager() {
     this.mineskinClient = new MineskinClient();
     this.skinMap = Maps.newHashMap();
+    this.downloadRequests = new HashSet<>();
   }
 
+  private final Set<Integer> downloadRequests;
   private final HashMap<Integer, Skin> skinMap;
   private final MineskinClient mineskinClient;
 
@@ -81,16 +85,19 @@ public class PlayerSkinManager {
     if (skin != null) {
       long unixWeek = TimeUnit.DAYS.toMillis(7);
       long unixDay = unixWeek / 7;
-      if (skin.timestamp + unixWeek + ThreadLocalRandom.current().nextLong(-unixDay, unixDay) < System.currentTimeMillis()) {
+      if (skin.downloadTimestamp + unixWeek + ThreadLocalRandom.current().nextLong(-unixDay, unixDay) < System.currentTimeMillis()) {
         System.out.println("§7[MineskinClient]§7 Skin with ID [" + id + "] has old cache data. Downloading.");
         this.mineskinClient.getSkin(id, skinCallback);
+        downloadRequests.add(id);
         return;
       }
       System.out.println("§7[MineskinClient]§7 Getting Skin with ID [" + id + "] from skin cache.");
-      skinCallback.skinConsumer.accept(this.skinMap.get(id));
+      skinCallback.skinConsumer.accept(skin);
+      skinCallback.locked = false;
       return;
     }
     System.out.println("§7[MineskinClient]§7 Downloading Skin with ID [" + id + "] from Mineskin.");
+    downloadRequests.add(id);
     this.mineskinClient.getSkin(id, skinCallback);
   }
 
@@ -163,7 +170,10 @@ public class PlayerSkinManager {
     @Override
     public void done(final Skin skin) {
       Preconditions.checkArgument(skin != null);
-      this.playerSkinManager.skinMap.put(skin.id, skin);
+      if (playerSkinManager.downloadRequests.remove(skin.id)) {
+        skin.downloadTimestamp = System.currentTimeMillis();
+        this.playerSkinManager.skinMap.put(skin.id, skin);
+      }
       this.skinConsumer.accept(skin);
 
       this.locked = false;
