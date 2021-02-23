@@ -36,24 +36,8 @@ public abstract class AbstractHologramManager implements Listener {
     loadedHolograms = HashBasedTable.create();
     movingHolograms = new ObjectOpenHashSet<>();
     Bukkit.getPluginManager().registerEvents(this, host);
-    Bukkit.getOnlinePlayers().forEach(
-        player -> hologramViews.put(player, new HologramView(player))); // Handle reloads
-    Bukkit.getScheduler().runTaskTimer(host, () -> {
-      if (movingHolograms.isEmpty()) {
-        return;
-      }
-      final Set<MovingHologram> removers = Sets.newHashSet();
-      for (final MovingHologram moving : movingHolograms) {
-        if (moving.isAlive()) {
-          moving.onTick();
-        } else {
-          removers.add(moving);
-        }
-      }
-      for (final MovingHologram remov : removers) {
-        runOutMovingHologram(remov);
-      }
-    }, 1L, 1L);
+    Bukkit.getOnlinePlayers().forEach(player -> hologramViews.put(player, new HologramView(player))); // Handle reloads
+    Bukkit.getScheduler().runTaskTimer(host, this::tickMovingHolograms, 1L, 1L);
   }
 
   private final IHologramFactory factory;
@@ -64,9 +48,32 @@ public abstract class AbstractHologramManager implements Listener {
   private final Set<MovingHologram> movingHolograms;
   private final Map<UUID, AbstractHologram> hologramIDMap;
 
+  private void tickMovingHolograms() {
+    if (movingHolograms.isEmpty()) {
+      return;
+    }
+    final Set<MovingHologram> removers = Sets.newHashSet();
+    for (final MovingHologram moving : movingHolograms) {
+      if (moving.isAlive()) {
+        moving.onTick();
+      } else {
+        removers.add(moving);
+      }
+    }
+    for (final MovingHologram candidate : removers) {
+      runOutMovingHologram(candidate);
+    }
+  }
+
   public MovingHologram createMovingHologram(final Location location, final Vector direction, final int ticksAllive) {
     final MovingHologram moving = new MovingHologram(createHologram(location), direction,
         ticksAllive);
+    movingHolograms.add(moving);
+    return moving;
+  }
+
+  public MovingHologram createTemporaryHologram(final Location location, final int ticksAlive) {
+    final MovingHologram moving = new MovingHologram(createHologram(location), null, ticksAlive);
     movingHolograms.add(moving);
     return moving;
   }

@@ -25,7 +25,9 @@ public class MovingHologram {
 
   protected void onTick() {
     ticksLived++;
-    this.hologram.move(this.direction);
+    if (direction != null) {
+      this.hologram.move(this.direction);
+    }
   }
 
 }
