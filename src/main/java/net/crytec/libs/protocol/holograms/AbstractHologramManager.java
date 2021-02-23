@@ -65,9 +65,14 @@ public abstract class AbstractHologramManager implements Listener {
     }
   }
 
-  public MovingHologram createMovingHologram(final Location location, final Vector direction, final int ticksAllive) {
-    final MovingHologram moving = new MovingHologram(createHologram(location), direction,
-        ticksAllive);
+  public MovingHologram createMovingHologram(final Location location, final Vector direction, final int ticksAlive) {
+    final MovingHologram moving = new MovingHologram(createHologram(location), direction, ticksAlive);
+    movingHolograms.add(moving);
+    return moving;
+  }
+
+  public MovingHologram decorateAsMoving(AbstractHologram hologram, final Vector direction, final int ticksAlive) {
+    final MovingHologram moving = new MovingHologram(hologram, direction, ticksAlive);
     movingHolograms.add(moving);
     return moving;
   }
@@ -175,6 +180,10 @@ public abstract class AbstractHologramManager implements Listener {
 
   public AbstractHologram createHologram(final Location location) {
     return createHologram(location, UUID.randomUUID());
+  }
+
+  public AbstractHologram createHologram(final Location location, final Predicate<Player> viewFilter) {
+    return createHologram(location, viewFilter, UUID.randomUUID());
   }
 
   public AbstractHologram createHologram(final Location location, final Predicate<Player> viewFilter, UUID holoID) {
