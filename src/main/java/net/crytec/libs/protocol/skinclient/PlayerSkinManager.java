@@ -23,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import javax.imageio.ImageIO;
+import net.crytec.libs.protocol.ProtocolAPI;
 import net.crytec.libs.protocol.skinclient.data.Skin;
 import net.crytec.libs.protocol.skinclient.data.SkinCallback;
 
@@ -86,17 +87,17 @@ public class PlayerSkinManager {
       long unixWeek = TimeUnit.DAYS.toMillis(7);
       long unixDay = unixWeek / 7;
       if (skin.downloadTimestamp + unixWeek + ThreadLocalRandom.current().nextLong(-unixDay, unixDay) < System.currentTimeMillis()) {
-        System.out.println("§7[MineskinClient]§7 Skin with ID [" + id + "] has old cache data. Downloading.");
+        ProtocolAPI.getPluginLogger().info("Skin with ID [" + id + "] has old cache data. Downloading.");
         this.mineskinClient.getSkin(id, skinCallback);
         downloadRequests.add(id);
         return;
       }
-      System.out.println("§7[MineskinClient]§7 Getting Skin with ID [" + id + "] from skin cache.");
+      ProtocolAPI.getPluginLogger().info("Getting Skin with ID [" + id + "] from skin cache.");
       skinCallback.skinConsumer.accept(skin);
       skinCallback.locked = false;
       return;
     }
-    System.out.println("§7[MineskinClient]§7 Downloading Skin with ID [" + id + "] from Mineskin.");
+    ProtocolAPI.getPluginLogger().info("§7Downloading Skin with ID [" + id + "] from Mineskin.org");
     downloadRequests.add(id);
     this.mineskinClient.getSkin(id, skinCallback);
   }
@@ -181,13 +182,13 @@ public class PlayerSkinManager {
 
     @Override
     public void uploading() {
-      System.out.println("§7[MineskinClient]§7 Uploading File...");
+      ProtocolAPI.getPluginLogger().info("SkinClient -> Uploading File...");
       this.locked = true;
     }
 
     @Override
     public void error(final String errorMessage) {
-      System.out.println("§7[MineskinClient]§c Error: " + errorMessage);
+      ProtocolAPI.getPluginLogger().warning("SkinClient -> Error: " + errorMessage);
       locked = false;
     }
 
@@ -199,7 +200,7 @@ public class PlayerSkinManager {
 
     @Override
     public void waiting(final long delay) {
-      System.out.println("§7[MineskinClient]§7 Waiting §e" + (delay + 1000) + "ms §fon connection.");
+      ProtocolAPI.getPluginLogger().info("SkinClient -> Waiting §e" + ((int) (delay / 100.0) / 10.0) + "s §fon connection.");
       locked = true;
     }
 

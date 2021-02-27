@@ -6,14 +6,18 @@ import java.lang.reflect.InvocationTargetException;
 import net.crytec.libs.protocol.holograms.AbstractHologramTextLine;
 import net.minecraft.server.v1_16_R3.ChatMessage;
 import net.minecraft.server.v1_16_R3.EntityArmorStand;
+import net.minecraft.server.v1_16_R3.EnumItemSlot;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntity.PacketPlayOutRelEntityMove;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_16_R3.PacketPlayOutSpawnEntity;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class HologramTextLine extends AbstractHologramTextLine {
@@ -43,11 +47,10 @@ public class HologramTextLine extends AbstractHologramTextLine {
     }
   }
 
-  private final class TextEntity extends EntityArmorStand {
+  private static final class TextEntity extends EntityArmorStand {
 
     public TextEntity(final Location location, final String line) {
-      super(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY(),
-          location.getZ());
+      super(((CraftWorld) location.getWorld()).getHandle(), location.getX(), location.getY(), location.getZ());
       this.setMarker(true);
       this.setInvulnerable(true);
       this.setInvisible(true);
